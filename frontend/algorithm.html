@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Algorithm Visualizer | DSA Viz</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  
+  <style>
+    .algorithm-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: var(--spacing-6);
+      padding: var(--spacing-6) 0;
+    }
+    
+    @media (max-width: 1024px) {
+      .algorithm-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar { order: -1; }
+    }
+    
+    .main-content { display: flex; flex-direction: column; gap: var(--spacing-6); }
+    
+    .visualization-wrapper {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    
+    .vis-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--spacing-4) var(--spacing-6);
+      border-bottom: 1px solid var(--color-border);
+    }
+    
+    .vis-title { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary); }
+    
+    .vis-stats { display: flex; gap: var(--spacing-6); }
+    .vis-stat { display: flex; align-items: center; gap: var(--spacing-2); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .vis-stat-value { font-weight: var(--font-weight-semibold); color: var(--color-text-primary); font-family: var(--font-family-mono); }
+    
+    .vis-canvas {
+      width: 100%;
+      height: 450px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+    }
+    
+    .vis-canvas canvas { width: 100%; height: 100%; }
+    
+    .explanation-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    
+    .explanation-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--color-border);
+      padding: var(--spacing-2);
+      gap: var(--spacing-1);
+    }
+    
+    .exp-tab {
+      padding: var(--spacing-2) var(--spacing-4);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-muted);
+      border-radius: var(--radius-md);
+      transition: var(--transition-fast);
+      cursor: pointer;
+    }
+    
+    .exp-tab:hover { color: var(--color-text-secondary); background: var(--color-bg-tertiary); }
+    .exp-tab.active { color: var(--color-text-primary); background: var(--color-bg-tertiary); }
+    
+    .exp-content { padding: var(--spacing-6); display: none; }
+    .exp-content.active { display: block; }
+    .exp-content h3 { font-size: var(--font-size-lg); margin-bottom: var(--spacing-4); }
+    .exp-content p { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.7; margin-bottom: var(--spacing-4); }
+    .exp-content ul { padding-left: var(--spacing-6); margin-bottom: var(--spacing-4); }
+    .exp-content li { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.7; margin-bottom: var(--spacing-2); list-style: disc; }
+    
+    .code-block {
+      background: var(--color-bg-primary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-4);
+      overflow-x: auto;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-sm);
+      line-height: 1.6;
+    }
+    
+    .code-block .keyword { color: #c792ea; }
+    .code-block .function { color: #82aaff; }
+    .code-block .string { color: #c3e88d; }
+    .code-block .number { color: #f78c6c; }
+    .code-block .comment { color: #546e7a; }
+    
+    .complexity-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--spacing-4);
+    }
+    
+    .complexity-card {
+      padding: var(--spacing-4);
+      background: var(--color-bg-tertiary);
+      border-radius: var(--radius-lg);
+      text-align: center;
+    }
+    
+    .complexity-label { font-size: var(--font-size-xs); color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--spacing-2); }
+    .complexity-value { font-size: var(--font-size-xl); font-family: var(--font-family-mono); font-weight: var(--font-weight-bold); color: var(--color-primary-light); }
+    
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      transition: var(--transition-fast);
+      margin-bottom: var(--spacing-4);
+    }
+    
+    .back-btn:hover { color: var(--color-text-primary); }
+    
+    .page-header {
+      padding: var(--spacing-8) 0 var(--spacing-4);
+    }
+    
+    .page-header h1 {
+      font-size: var(--font-size-3xl);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .page-header p {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-base);
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+      margin-top: var(--spacing-4);
+    }
+    
+    .progress-info {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      font-family: var(--font-family-mono);
+      min-width: 60px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-content">
+      <a href="index.html" class="navbar-logo">
+        <div class="navbar-logo-icon">⚡</div>
+        <span>DSA<span class="text-gradient">Viz</span></span>
+      </a>
+      
+      <div class="navbar-nav">
+        <a href="index.html#algorithms" class="navbar-link">Algorithms</a>
+        <a href="index.html#features" class="navbar-link">Features</a>
+        <a href="index.html#about" class="navbar-link">About</a>
+      </div>
+      
+      <button class="navbar-menu-btn" id="menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main style="padding-top: var(--navbar-height);">
+    <div class="container">
+      <!-- Back button -->
+      <a href="index.html#algorithms" class="back-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Back to Algorithms
+      </a>
+      
+      <!-- Page Header -->
+      <header class="page-header">
+        <h1 id="algo-title">Loading...</h1>
+        <p id="algo-description">Loading algorithm...</p>
+      </header>
+      
+      <!-- Main Layout -->
+      <div class="algorithm-layout">
+        <!-- Main Content -->
+        <div class="main-content">
+          <!-- Visualization -->
+          <div class="visualization-wrapper">
+            <div class="vis-header">
+              <span class="vis-title">Visualization</span>
+              <div class="vis-stats">
+                <div class="vis-stat">
+                  <span>Moves:</span>
+                  <span class="vis-stat-value" id="stat-moves">0</span>
+                </div>
+                <div class="vis-stat">
+                  <span>Step:</span>
+                  <span class="vis-stat-value" id="stat-step">0/0</span>
+                </div>
+              </div>
+            </div>
+            <div class="vis-canvas">
+              <canvas id="visualization-canvas"></canvas>
+            </div>
+          </div>
+          
+          <!-- Explanation Panel -->
+          <div class="explanation-panel">
+            <div class="explanation-tabs">
+              <button class="exp-tab active" data-tab="overview">Overview</button>
+              <button class="exp-tab" data-tab="steps">How It Works</button>
+              <button class="exp-tab" data-tab="applications">Applications</button>
+              <button class="exp-tab" data-tab="code">Code</button>
+            </div>
+            
+            <div class="exp-content active" id="tab-overview">
+              <!-- Populated by JS -->
+            </div>
+            <div class="exp-content" id="tab-steps">
+              <!-- Populated by JS -->
+            </div>
+            <div class="exp-content" id="tab-applications">
+              <!-- Populated by JS -->
+            </div>
+            <div class="exp-content" id="tab-code">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="sidebar" id="control-panel">
+          <!-- Controls populated by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script type="module">
+    // Visualizer mapping - explicit imports for browser compatibility
+    const visualizers = {
+      'tower-of-hanoi': () => import('./js/visualizers/tower-of-hanoi.js'),
+      'n-queens': () => import('./js/visualizers/n-queens.js'),
+      'merge-sort': () => import('./js/visualizers/merge-sort.js'),
+      'quick-sort': () => import('./js/visualizers/quick-sort.js'),
+      'dijkstra': () => import('./js/visualizers/dijkstra.js'),
+      'a-star': () => import('./js/visualizers/a-star.js'),
+      'bst': () => import('./js/visualizers/bst.js'),
+      'sudoku': () => import('./js/visualizers/sudoku.js'),
+      'kmp': () => import('./js/visualizers/kmp.js'),
+      'graph-traversal': () => import('./js/visualizers/graph-traversal.js'),
+      'lcs': () => import('./js/visualizers/lcs.js')
+    };
+
+    // Get algorithm ID from URL (support both hash and query param)
+    const hashAlgo = window.location.hash.slice(1); // Remove the # symbol
+    const urlParams = new URLSearchParams(window.location.search);
+    const queryAlgo = urlParams.get('algo');
+    const algoId = hashAlgo || queryAlgo || 'tower-of-hanoi';
+    
+    console.log('URL:', window.location.href);
+    console.log('Hash:', window.location.hash);
+    console.log('Search params:', window.location.search);
+    console.log('Algorithm ID:', algoId);
+    console.log('Available visualizers:', Object.keys(visualizers));
+    
+    // Update page title
+    document.title = `${algoId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} | DSA Viz`;
+    
+    // Load algorithm module
+    async function loadAlgorithm() {
+      console.log('Loading algorithm:', algoId);
+      try {
+        const loader = visualizers[algoId];
+        console.log('Loader found:', !!loader);
+        if (!loader) {
+          throw new Error(`Visualizer not found for: ${algoId}`);
+        }
+        const module = await loader();
+        console.log('Module loaded:', module);
+        if (module.init) {
+          console.log('Calling init()...');
+          module.init();
+          console.log('Init complete');
+        } else {
+          console.warn('No init function found in module');
+        }
+      } catch (error) {
+        console.error('Failed to load algorithm:', error);
+        document.getElementById('algo-title').textContent = 'Algorithm Not Found';
+        document.getElementById('algo-description').textContent = `The requested algorithm "${algoId}" could not be loaded. Error: ${error.message}`;
+      }
+    }
+    
+    // Tab switching
+    document.querySelectorAll('.exp-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.exp-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.exp-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+      });
+    });
+    
+    // Navbar scroll
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+    
+    loadAlgorithm();
+  </script>
+</body>
+</html>

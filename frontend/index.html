@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Interactive DSA Algorithm Visualizer - Learn data structures and algorithms through beautiful animations and step-by-step explanations.">
+  <meta name="keywords" content="algorithms, data structures, visualization, sorting, pathfinding, DSA, learning">
+  <meta name="author" content="DSA Visualizer">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="DSA Algorithm Visualizer">
+  <meta property="og:description" content="Learn algorithms through interactive visualizations">
+  <meta property="og:type" content="website">
+  
+  <title>DSA Algorithm Visualizer | Learn Algorithms Visually</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  
+  <style>
+    /* Additional homepage styles */
+    .hero-animation-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .hero-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 300px;
+      padding: 40px;
+    }
+    
+    .hero-bar {
+      width: 30px;
+      background: var(--gradient-primary);
+      border-radius: 6px 6px 0 0;
+      transition: height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+    
+    .hero-bar:nth-child(odd) {
+      background: var(--gradient-secondary);
+    }
+    
+    /* Search bar styles */
+    .search-container {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto var(--spacing-8);
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: var(--spacing-4) var(--spacing-6);
+      padding-left: 48px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
+      color: var(--color-text-primary);
+      font-size: var(--font-size-base);
+      transition: var(--transition-fast);
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+    
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--color-text-muted);
+    }
+
+    /* Feature cards */
+    .features-section {
+      padding: var(--spacing-20) 0;
+      background: var(--color-bg-secondary);
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--spacing-6);
+    }
+    
+    .feature-card {
+      padding: var(--spacing-8);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      text-align: center;
+      transition: var(--transition-normal);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-glow);
+    }
+    
+    .feature-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--spacing-4);
+      background: var(--gradient-primary);
+      border-radius: var(--radius-xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .feature-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-2);
+    }
+    
+    .feature-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+
+    /* Animated preview canvas */
+    #hero-canvas {
+      border-radius: var(--radius-xl);
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container navbar-content">
+      <a href="index.html" class="navbar-logo">
+        <div class="navbar-logo-icon">⚡</div>
+        <span>DSA<span class="text-gradient">Viz</span></span>
+      </a>
+      
+      <div class="navbar-nav">
+        <a href="#algorithms" class="navbar-link">Algorithms</a>
+        <a href="#features" class="navbar-link">Features</a>
+        <a href="#about" class="navbar-link">About</a>
+      </div>
+      
+      <div class="navbar-cta">
+        <a href="#algorithms" class="btn btn-primary">Get Started</a>
+      </div>
+      
+      <button class="navbar-menu-btn" id="menu-btn" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-background">
+      <div class="hero-background-grid"></div>
+      <div class="hero-orb hero-orb-1"></div>
+      <div class="hero-orb hero-orb-2"></div>
+    </div>
+    
+    <div class="container hero-content">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span>Interactive Learning Platform</span>
+        </div>
+        
+        <h1 class="hero-title">
+          Visualize <span class="text-gradient">Algorithms</span> Like Never Before
+        </h1>
+        
+        <p class="hero-description">
+          Master data structures and algorithms through beautiful, interactive visualizations. 
+          Watch sorting algorithms in action, explore graph traversals, and understand complex 
+          concepts with step-by-step animations.
+        </p>
+        
+        <div class="hero-actions">
+          <a href="#algorithms" class="btn btn-primary btn-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            Start Exploring
+          </a>
+          <a href="#about" class="btn btn-secondary btn-lg">Learn More</a>
+        </div>
+        
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value">11+</div>
+            <div class="hero-stat-label">Algorithms</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">60fps</div>
+            <div class="hero-stat-label">Smooth Animations</div>
+          </div>
+          <div class="hero-stat">
+            <div class="hero-stat-value">100%</div>
+            <div class="hero-stat-label">Free & Open</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="hero-visual-container">
+          <div class="hero-algorithm-preview" id="hero-preview">
+            <canvas id="hero-canvas" width="500" height="500"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Algorithms Section -->
+  <section class="algorithms-section" id="algorithms">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Explore <span class="text-gradient">Algorithms</span></h2>
+        <p class="section-description">
+          Choose from our collection of beautifully visualized algorithms. 
+          Each comes with detailed explanations and interactive controls.
+        </p>
+      </div>
+      
+      <!-- Search -->
+      <div class="search-container">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" placeholder="Search algorithms..." id="search-input">
+      </div>
+      
+      <!-- Filters -->
+      <div class="algorithm-filters">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="sorting">Sorting</button>
+        <button class="filter-btn" data-filter="pathfinding">Pathfinding</button>
+        <button class="filter-btn" data-filter="backtracking">Backtracking</button>
+        <button class="filter-btn" data-filter="dynamic">Dynamic Programming</button>
+        <button class="filter-btn" data-filter="trees">Trees</button>
+        <button class="filter-btn" data-filter="strings">Strings</button>
+      </div>
+      
+      <!-- Algorithm Grid -->
+      <div class="algorithm-grid" id="algorithm-grid">
+        <!-- Cards populated by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Why <span class="text-gradient">DSA Viz</span>?</h2>
+        <p class="section-description">
+          Built for learners, by learners. Experience the best way to understand algorithms.
+        </p>
+      </div>
+      
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Lightning Fast</h3>
+          <p class="feature-description">Smooth 60fps animations powered by Canvas and requestAnimationFrame</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon" style="background: var(--gradient-secondary);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Step by Step</h3>
+          <p class="feature-description">Control playback speed, pause, and step through each operation</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon" style="background: var(--gradient-success);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Educational</h3>
+          <p class="feature-description">Clear explanations, complexity analysis, and real-world applications</p>
+        </div>
+        
+        <div class="feature-card">
+          <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #ef4444);">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Responsive</h3>
+          <p class="feature-description">Works beautifully on desktop, tablet, and mobile devices</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section" id="about">
+    <div class="container" style="text-align: center; max-width: 800px;">
+      <h2 class="section-title">Built for Learning</h2>
+      <p style="font-size: var(--font-size-lg); color: var(--color-text-secondary); line-height: 1.8; margin-bottom: var(--spacing-8);">
+        DSA Visualizer was created to help students, developers, and curious minds understand 
+        complex algorithms through visual representation. Whether you're preparing for interviews, 
+        studying computer science, or just curious about how things work, our interactive 
+        visualizations make learning engaging and memorable.
+      </p>
+      <a href="#algorithms" class="btn btn-primary btn-lg">Start Learning Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-logo">
+        <span>⚡</span>
+        <span>DSA<span class="text-gradient">Viz</span></span>
+      </div>
+      
+      <div class="footer-links">
+        <a href="#algorithms" class="footer-link">Algorithms</a>
+        <a href="#features" class="footer-link">Features</a>
+        <a href="#about" class="footer-link">About</a>
+      </div>
+      
+      <p class="footer-copyright">© 2024 DSA Visualizer. Made with ❤️ for learners.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
